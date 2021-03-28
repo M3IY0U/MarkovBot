@@ -58,12 +58,6 @@ bot.command(:eval, help_available: false) do |event, *code|
   end
 end
 
-bot.command(:eval, help_available: false) do |event|
-  break unless event.user.id == @owner_id
-
-  %x(./restart.sh)
-end
-
 def generate_text(user)
   r = user.make_sentence
   r = user.make_sentence while r.nil?
