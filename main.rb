@@ -10,10 +10,11 @@ bot = Discordrb::Commands::CommandBot.new token: File.read('token.txt'),
 bot.bucket :CoolDown, limit: 1, time_span: 5, delay: 0
 
 @chains = {}
+@owner_id = 137_234_090_309_976_064
 
 # remove model from markov chain
 bot.command(:disable, min_args: 1, max_args: 1, help_available: false) do |event, which|
-  break unless event.user.id == 137_234_090_309_976_064
+  break unless event.user.id == @owner_id
 
   begin
     @chains.delete(which)
@@ -26,7 +27,7 @@ end
 
 # init/add model to markov chain
 bot.command(:enable, min_args: 1, max_args: 1, help_available: false) do |event, which|
-  break unless event.user.id == 137_234_090_309_976_064
+  break unless event.user.id == @owner_id
 
   t1 = Time.now
   begin
@@ -39,20 +40,27 @@ bot.command(:enable, min_args: 1, max_args: 1, help_available: false) do |event,
 end
 
 # create a deep:tm: message by walking the markov chain
-bot.command(:deep, aliases: [:Deep], bucket: :CoolDown) do |_event, user|
+bot.command(:deep, aliases: [:Deep], bucket: :CoolDown,
+                   description: 'Creates a deep™️message by using the respective markov chain') do |_event, user|
   return "#{user} not currently loaded" unless @chains.key? user
 
   generate_text @chains[user]
 end
 
 bot.command(:eval, help_available: false) do |event, *code|
-  break unless event.user.id == 137_234_090_309_976_064
+  break unless event.user.id == @owner_id
 
   begin
     eval code.join ' '
   rescue StandardError => e
     return e.inspect
   end
+end
+
+bot.command(:eval, help_available: false) do |event|
+  break unless event.user.id == @owner_id
+
+  %x(./restart.sh)
 end
 
 def generate_text(user)
