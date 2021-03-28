@@ -42,6 +42,7 @@ end
 # create a deep:tm: message by walking the markov chain
 bot.command(:deep, aliases: [:Deep], bucket: :CoolDown,
                    description: 'Creates a deep™️message by using the respective markov chain') do |_event, user|
+  return "Currently loaded chains: #{@chains.keys.join ', '}" if user.to_s == ''
   return "#{user} not currently loaded" unless @chains.key? user
 
   generate_text @chains[user]
